@@ -3,6 +3,7 @@ from io import StringIO
 from typing import Set, Tuple, List
 
 import yaml
+import frontmatter
 
 from notesdir.accessors.base import Accessor
 from notesdir.models import AddTagCmd, DelTagCmd, FileInfo, SetTitleCmd, SetCreatedCmd, ReplaceHrefCmd, LinkInfo
@@ -104,9 +105,11 @@ class MarkdownAccessor(Accessor):
        This is a really #uninteresting note.
     """
     def _load(self):
-        with open(self.path, 'r') as file:
-            text = file.read()
-        self.meta, body = _extract_meta(text)
+        with open(self.path) as f:
+            print(self.path)
+            metadata, content = frontmatter.parse(f.read())
+        self.meta = metadata
+        body = content
         self.parts = _split(body)
         self.hrefs = []
         self._hashtags = set()

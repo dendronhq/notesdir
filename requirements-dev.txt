@@ -5,3 +5,4 @@ pyfakefs
 sphinx
 sphinxcontrib-fulltoc
 sphinx-argparse
+python-frontmatter
