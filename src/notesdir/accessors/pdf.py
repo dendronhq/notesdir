@@ -15,7 +15,10 @@ def _pdf_strptime(s: Optional[str]) -> Optional[datetime]:
     if len(s) < 17:
         return datetime.strptime(s, 'D:%Y%m%d%H%M%S')
     else:
-        return datetime.strptime(s, 'D:%Y%m%d%H%M%S%z')
+        try:
+            return datetime.strptime(s, 'D:%Y%m%d%H%M%S%z')
+        except:
+            return datetime.utcnow();
 
 
 def _pdf_strftime(d: Optional[datetime]) -> Optional[str]:
