@@ -11,6 +11,7 @@ from notesdir.models import AddTagCmd, DelTagCmd, FileInfo, SetTitleCmd, SetCrea
 YAML_META_RE = re.compile(r'(?ms)(\A---\n(.*)\n(---|\.\.\.)\s*\r?\n)?(.*)')
 TAG_RE = re.compile(r'(\s|^)#([a-zA-Z][a-zA-Z\-_0-9]*)\b')
 INLINE_HREF_RE = re.compile(r'\[.*?\]\((\S+?)\)')
+WIKI_LINK_RE = re.compile(r'\[\[(.*?)\]\]')
 REFSTYLE_HREF_RE = re.compile(r'(?m)^\[.*?\]:\s*(\S+)')
 FENCED_CODE_RE = re.compile(r'(?ms)^\s*```.*?^\s*```')
 
@@ -39,7 +40,7 @@ def _remove_hashtag(doc: str, tag: str) -> str:
 
 
 def _extract_hrefs(doc) -> List[str]:
-    return INLINE_HREF_RE.findall(doc) + REFSTYLE_HREF_RE.findall(doc)
+    return INLINE_HREF_RE.findall(doc) + REFSTYLE_HREF_RE.findall(doc) + WIKI_LINK_RE.findall(doc)
 
 
 def _replace_href(doc: str, src: str, dest: str) -> str:
@@ -106,7 +107,6 @@ class MarkdownAccessor(Accessor):
     """
     def _load(self):
         with open(self.path) as f:
-            print(self.path)
             metadata, content = frontmatter.parse(f.read())
         self.meta = metadata
         body = content
