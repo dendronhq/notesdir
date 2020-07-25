@@ -31,6 +31,18 @@ class LinkInfo:
     or the ``href`` or ``src`` attribute of an HTML tag, etc.
     """
 
+    name: str = field(default="")
+
+    def __post_init__(self):
+        """ Strips piped names out of file names
+        """
+        href = self.href
+        if href.find("|") >= 0:
+            [name, _href] = href.split("|")
+            self.href = _href.strip()
+            self.name = name.strip()
+
+
     def referent(self) -> Optional[str]:
         """Returns the resolved, absolute local path that this link refers to.
 

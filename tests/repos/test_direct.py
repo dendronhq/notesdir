@@ -25,11 +25,17 @@ def test_backlinks(fs):
     fs.create_file('/notes/bar/baz/no.md', contents='[3](../../foo/bogus')
     fs.create_file('/notes/r2.md', contents='[4](foo/subject.md) [5](foo/bogus)')
     fs.create_file('/notes/foo/r3.md', contents='[6](subject.md)')
+    fs.create_file('/notes/foo/wiki-link.md', contents='[[subject.md]]')
+    fs.create_file('/notes/foo/wiki-link-pipe.md', contents='[[piped | subject.md]]')
     repo = DirectRepoConf(root_paths={'/notes'}).instantiate()
+    info = repo.info('/notes/foo/wiki-link-pipe.md')
+    print(info)
     info = repo.info('subject.md', 'backlinks')
     assert info.backlinks == [
         LinkInfo('/notes/bar/baz/r1.md', '../../foo/subject.md'),
         LinkInfo('/notes/foo/r3.md', 'subject.md'),
+        LinkInfo('/notes/foo/wiki-link-pipe.md', 'subject.md', "piped"),
+        LinkInfo('/notes/foo/wiki-link.md', 'subject.md'),
         LinkInfo('/notes/r2.md', 'foo/subject.md'),
     ]
 

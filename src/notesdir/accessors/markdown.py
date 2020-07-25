@@ -40,8 +40,8 @@ def _remove_hashtag(doc: str, tag: str) -> str:
 
 
 def _extract_hrefs(doc) -> List[str]:
-    return INLINE_HREF_RE.findall(doc) + REFSTYLE_HREF_RE.findall(doc) + WIKI_LINK_RE.findall(doc)
-
+    links = INLINE_HREF_RE.findall(doc) + REFSTYLE_HREF_RE.findall(doc) + WIKI_LINK_RE.findall(doc)
+    return links
 
 def _replace_href(doc: str, src: str, dest: str) -> str:
     escaped_src = re.escape(src)
@@ -105,6 +105,7 @@ class MarkdownAccessor(Accessor):
        The three dots indicate the end of the metadata. Now we're in **Markdown**!
        This is a really #uninteresting note.
     """
+
     def _load(self):
         with open(self.path) as f:
             metadata, content = frontmatter.parse(f.read())
