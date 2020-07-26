@@ -70,7 +70,6 @@ class LinkInfo:
         None will be returned if the href cannot be parsed or appears to be a non-file URI.
         """
         try:
-            print(self.href)
             url = urlparse(self.href)
             if (not url.scheme) or (url.scheme == 'file' and url.netloc in ['', 'localhost']):
                 if not url.path:
