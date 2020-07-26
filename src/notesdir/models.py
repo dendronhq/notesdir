@@ -14,6 +14,24 @@ from urllib.parse import urlparse, unquote_plus
 
 
 @dataclass
+class Link:
+    href: str
+    name: str = field(default="")
+
+    def __post_init__(self):
+        """ Strips piped names out of file names
+        """
+        href = self.href
+        if href.find("|") >= 0:
+            [name, _href] = href.split("|")
+            self.href = _href.strip()
+            self.name = name.strip()
+        if not href.endswith(".md"):
+            self.href = href + ".md"
+
+    def __lt__(self, other):
+            return self.href < other.href
+@dataclass
 class LinkInfo:
     """Represents a link from a file to some resource.
 
@@ -41,7 +59,8 @@ class LinkInfo:
             [name, _href] = href.split("|")
             self.href = _href.strip()
             self.name = name.strip()
-
+        if not href.endswith(".md"):
+            self.href = href + ".md"
 
     def referent(self) -> Optional[str]:
         """Returns the resolved, absolute local path that this link refers to.
@@ -51,6 +70,7 @@ class LinkInfo:
         None will be returned if the href cannot be parsed or appears to be a non-file URI.
         """
         try:
+            print(self.href)
             url = urlparse(self.href)
             if (not url.scheme) or (url.scheme == 'file' and url.netloc in ['', 'localhost']):
                 if not url.path:

@@ -6,7 +6,7 @@ import yaml
 import frontmatter
 
 from notesdir.accessors.base import Accessor
-from notesdir.models import AddTagCmd, DelTagCmd, FileInfo, SetTitleCmd, SetCreatedCmd, ReplaceHrefCmd, LinkInfo
+from notesdir.models import AddTagCmd, DelTagCmd, FileInfo, SetTitleCmd, SetCreatedCmd, ReplaceHrefCmd, LinkInfo, Link
 
 YAML_META_RE = re.compile(r'(?ms)(\A---\n(.*)\n(---|\.\.\.)\s*\r?\n)?(.*)')
 TAG_RE = re.compile(r'(\s|^)#([a-zA-Z][a-zA-Z\-_0-9]*)\b')
@@ -39,12 +39,18 @@ def _remove_hashtag(doc: str, tag: str) -> str:
     return re.sub(TAG_RE, replace, doc)
 
 
-def _extract_hrefs(doc) -> List[str]:
+def _extract_hrefs(doc) -> List[Link]:
     links = INLINE_HREF_RE.findall(doc) + REFSTYLE_HREF_RE.findall(doc) + WIKI_LINK_RE.findall(doc)
-    return links
+    return [Link(l) for l in links]
+
+def rchop(s, suffix):
+    if suffix and s.endswith(suffix):
+        return s[:-len(suffix)]
+    return s
 
 def _replace_href(doc: str, src: str, dest: str) -> str:
-    escaped_src = re.escape(src)
+    escaped_src = re.escape(rchop(src, ".md"))
+    dest = rchop(dest, ".md")
 
     def inline_replacement(match):
         return f'{match.group(1)}({dest})'
@@ -128,7 +134,7 @@ class MarkdownAccessor(Accessor):
         info.title = self.meta.get('title')
         info.created = self.meta.get('created')
         info.tags = {k.lower() for k in self.meta.get('keywords', [])}.union(self._hashtags)
-        info.links = [LinkInfo(self.path, r) for r in sorted(self.hrefs)]
+        info.links = [LinkInfo(self.path, r.href) for r in sorted(self.hrefs)]
 
     def _save(self):
         body = ''.join(part for _, part in self.parts)
@@ -177,7 +183,7 @@ class MarkdownAccessor(Accessor):
         self.meta['created'] = edit.value
 
     def _replace_href(self, edit: ReplaceHrefCmd):
-        if edit.original not in self.hrefs:
+        if edit.original not in [l.href for l in self.hrefs]:
             return
         self.edited = True
         for i in range(len(self.parts)):
