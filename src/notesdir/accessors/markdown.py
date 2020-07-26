@@ -15,6 +15,11 @@ WIKI_LINK_RE = re.compile(r'\[\[(.*?)\]\]')
 REFSTYLE_HREF_RE = re.compile(r'(?m)^\[.*?\]:\s*(\S+)')
 FENCED_CODE_RE = re.compile(r'(?ms)^\s*```.*?^\s*```')
 
+def str_presenter(dumper, data):
+  if len(data.splitlines()) > 1:  # check for multiline string
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+  return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+yaml.add_representer(str, str_presenter)
 
 def _extract_meta(doc) -> Tuple[dict, str]:
     meta = {}
@@ -140,8 +145,9 @@ class MarkdownAccessor(Accessor):
         body = ''.join(part for _, part in self.parts)
         if self.meta:
             sio = StringIO()
-            yaml.safe_dump(self.meta, sio)
-            text = f'---\n{sio.getvalue()}...\n{body}'
+            meta = dict(self.meta)
+            yaml.dump(meta, sio)
+            text = f'---\n{sio.getvalue()}---\n{body}'
         else:
             text = body
         with open(self.path, 'w') as file:
