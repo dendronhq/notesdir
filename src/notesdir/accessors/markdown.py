@@ -52,10 +52,15 @@ def _replace_href(doc: str, src: str, dest: str) -> str:
     def refstyle_replacement(match):
         return f'{match.group(1)}{dest}{match.group(2)}'
 
+    def wiki_replace(match):
+        return f'{match.group(1)}{dest}]]'
+
     inline = rf'(\[.*\])\({escaped_src}\)'
     doc = re.sub(inline, inline_replacement, doc)
     refstyle = rf'(?m)(^\[.*\]:\s*){escaped_src}(\s|$)'
     doc = re.sub(refstyle, refstyle_replacement, doc)
+    wiki = rf'(\[\[[^|\]]*[\|]?)\s*{escaped_src}\]\]'
+    doc = re.sub(wiki, wiki_replace, doc)
     return doc
 
 
