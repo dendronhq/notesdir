@@ -21,13 +21,12 @@ class Link:
     def __post_init__(self):
         """ Strips piped names out of file names
         """
-        href = self.href
-        if href.find("|") >= 0:
-            [name, _href] = href.split("|")
+        if self.href.find("|") >= 0:
+            [name, _href] = self.href.split("|")
             self.href = _href.strip()
             self.name = name.strip()
-        if not href.endswith(".md"):
-            self.href = href + ".md"
+        if not self.href.endswith(".md"):
+            self.href = self.href + ".md"
 
     def __lt__(self, other):
             return self.href < other.href
