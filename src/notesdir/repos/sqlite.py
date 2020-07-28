@@ -1,5 +1,6 @@
 """Provides the :class:`SqliteRepo` class."""
 
+import string
 from collections import namedtuple
 from datetime import datetime
 import dataclasses
@@ -211,7 +212,12 @@ class SqliteRepo(DirectRepo):
         if file_row:
             file_id = file_row[0]
             info.title = file_row[1]
-            info.created = file_row[2] and datetime.fromisoformat(file_row[2])
+            time_field = file_row[2]
+            if time_field:
+                if time_field.isnumeric():
+                    info.created = datetime.utcfromtimestamp(int(time_field)/1000)
+                else:
+                    info.created = datetime.fromisoformat(time_field)
             if fields.tags:
                 cursor.execute('SELECT tag FROM file_tags WHERE file_id = ?', (file_id,))
                 info.tags = {r[0] for r in cursor}
