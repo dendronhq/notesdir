@@ -15,6 +15,8 @@ WIKI_LINK_RE = re.compile(r'\[\[(.*?)\]\]')
 REFSTYLE_HREF_RE = re.compile(r'(?m)^\[.*?\]:\s*(\S+)')
 FENCED_CODE_RE = re.compile(r'(?ms)^\s*```.*?^\s*```')
 
+
+# extracted from this issue: https://github.com/yaml/pyyaml/issues/240#issuecomment-503265396
 def str_presenter(dumper, data):
   if len(data.splitlines()) > 1:  # check for multiline string
     return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
