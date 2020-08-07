@@ -5,7 +5,7 @@ from operator import attrgetter
 from collections import defaultdict, namedtuple
 import os
 import os.path
-from typing import List, Dict, Iterator, Set
+from typing import List, Dict, Iterator, Set, cast
 
 from notesdir.accessors.delegating import DelegatingAccessor
 from notesdir.conf import DirectRepoConf
@@ -71,7 +71,7 @@ class DirectRepo(Repo):
                 continue
 
             if isinstance(group[0], MoveCmd):
-                for edit in group:
+                for edit in cast(List[MoveCmd], group):
                     if edit.create_parents:
                         parent = os.path.split(edit.dest)[0]
                         os.makedirs(parent, exist_ok=True)
@@ -87,7 +87,7 @@ class DirectRepo(Repo):
                             prev = parent
                             parent = os.path.split(parent)[0]
             elif isinstance(group[0], CreateCmd):
-                for edit in group:
+                for edit in cast(List[CreateCmd], group):
                     with open(edit.path, 'w') as file:
                         file.write(edit.contents)
             else:
