@@ -4,14 +4,14 @@ with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="notesdir",
+    name="dendron-notesdir",
     version="0.0.4",
-    author="Jacob Williams",
-    author_email="jacobaw@gmail.com",
+    author="Kevin S Lin",
+    author_email="kevin@thence.io",
     description="Helpers for managing notes as a directory full of files.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    url="https://github.com/brokensandals/notesdir",
+    url="https://github.com/dendronhq/notesdir",
     packages=setuptools.find_packages('src'),
     package_dir={'': 'src'},
     entry_points={

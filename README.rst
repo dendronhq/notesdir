@@ -1,6 +1,8 @@
 About
 -----
 
+NOTE: this is a fork of https://pypi.org/project/notesdir/ to add Dendron related functionality
+
 Notesdir is a command-line tool to help you manage notes that are stored as regular files.
 It can assist with:
 
